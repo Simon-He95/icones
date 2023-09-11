@@ -4,7 +4,6 @@ import { themeColor } from './store'
 const style = computed<any>(() => ({
   '--theme-color': themeColor.value,
 }))
-let text = ''
 
 onMounted(() => {
   document.addEventListener('keydown', (e) => {
@@ -12,7 +11,7 @@ onMounted(() => {
       const selection = document.getSelection()
       if (!selection || !selection.toString())
         return
-      text = selection.toString()
+      const text = selection.toString()
       window.parent.postMessage({ eventType: 'copy', text }, '*')
     }
   })
@@ -23,7 +22,7 @@ onUnmounted(() => {
       const selection = document.getSelection()
       if (!selection || !selection.toString())
         return
-      text = selection.toString()
+      const text = selection.toString()
       window.parent.postMessage({ eventType: 'copy', text }, '*')
     }
   })
