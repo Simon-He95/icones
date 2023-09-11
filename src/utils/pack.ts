@@ -2,7 +2,7 @@ import { isVSCode } from '../env'
 import { bufferToString } from './bufferToSring'
 import {
   SvgToJSX, SvgToTSX, SvgToVue,
-  getSvg, toComponentName,
+  getSvg, getSvgSymbol, toComponentName,
 } from './icons'
 
 export async function LoadIconSvgs(icons: string[]) {
@@ -37,6 +37,25 @@ export async function Download(blob: Blob, name: string) {
     a.click()
     a.remove()
   }
+}
+
+export async function PackSVGSprite(icons: string[], options: any = {}) {
+  if (!icons.length)
+    return
+  const data = await LoadIconSvgs(icons)
+
+  let symbols = ''
+  for (const { name } of data)
+    symbols += `${await getSvgSymbol(name, options.size, options.color)}\n`
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+${symbols}
+</defs>
+</svg>`
+
+  const blob = new Blob([svg], { type: 'image/svg+xml' })
+  Download(blob, 'sprite.svg')
 }
 
 export async function PackIconFont(icons: string[], options: any = {}) {
@@ -81,6 +100,10 @@ export async function PackJsonZip(icons: string[], name: string) {
 
 export type PackType = 'svg' | 'tsx' | 'jsx' | 'vue' | 'json'
 
+function normalizeZipFleName(svgName: string): string {
+  return svgName.replace(':', '-')
+}
+
 export async function PackZip(
   icons: string[],
   name: string,
@@ -119,7 +142,7 @@ export async function PackZip(
   }
   else {
     for (const { name, svg } of data)
-      action(name, svg)
+      action(normalizeZipFleName(name), svg)
   }
   const blob = await zip.generateAsync({ type: 'blob' })
   Download(blob, `${name}-${type}.zip`)
