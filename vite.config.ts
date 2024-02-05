@@ -38,7 +38,6 @@ export default defineConfig(({ mode }) => {
       isElectron && renderer(),
       isElectron && esmodule(['prettier']),
       Vue({
-        reactivityTransform: true,
         customElement: [
           'iconify-icon',
         ],
@@ -57,7 +56,6 @@ export default defineConfig(({ mode }) => {
       AutoImport({
         imports: [
           'vue',
-          'vue/macros',
           'vue-router',
           '@vueuse/core',
         ],
